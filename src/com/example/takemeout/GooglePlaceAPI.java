@@ -152,8 +152,8 @@ public class GooglePlaceAPI {
 	
 	public static Bitmap getPic(String picRef, int W, int H) throws IOException
 	{
-		W = W - 40;
-		H = W;
+		//W = W;
+		//H = H;
 		String placePhoto = String.format(PlacePhotoURL, 
 				W,
 				H,

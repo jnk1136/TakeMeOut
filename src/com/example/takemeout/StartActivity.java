@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -42,7 +43,7 @@ public class StartActivity extends ActionBarActivity implements
 
 	public static int counter = 0;
 	List<String> result;
-	List<Place> listOfPlaces = new ArrayList();
+	List<Place> listOfPlaces = new ArrayList<Place>();
 	Button buttonNo;
 	Button buttonYes;
 	Button buttonInfo;
@@ -63,29 +64,37 @@ public class StartActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
+		
 
 		sqlHelper = ((MyApplication)getApplication()).sqlhelper;
-		//Bundle extras = getIntent().getExtras();
-		//sqlHelper.getInstance(this);
-		//sqlHelper = extras.getParcelable("sql");
-		//Log.i("OnCreate",sqlHelper.getAllData());
-		Log.i("onActivityResult","got bundle");
 
-		// sqlHelper.helper.getInstance(this);
+		Log.i("onActivityResult","got bundle");
 
 		buttonNo = (Button) findViewById(R.id.butNo);
 		buttonYes = (Button) findViewById(R.id.butYes);
 		buttonInfo = (Button) findViewById(R.id.butInfo);
 		view = (ImageView) this.findViewById(R.id.imageStore);
 		spinner = (ProgressBar) findViewById(R.id.progressBar);
+		
+		ViewTreeObserver vto = view.getViewTreeObserver();
+		vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+		    public boolean onPreDraw() {
+		        view.getViewTreeObserver().removeOnPreDrawListener(this);
+		        picW = view.getMeasuredWidth();
+		        picH = view.getMeasuredHeight();
+		        int finalWidth = view.getMeasuredWidth();
+		        Log.i("Photo OnPost","Height: " + picH + " Width: " + picW);
+		        return true;
+		    }
+		});
 
 		buttonNo.setClickable(false);
 		buttonYes.setClickable(false);
 		buttonInfo.setClickable(false);
 
-		metrics = this.getResources().getDisplayMetrics();
-		picW = metrics.widthPixels;
-		picH = metrics.heightPixels;
+		//metrics = this.getResources().getDisplayMetrics();
+		//picW = metrics.widthPixels;
+		//picH = metrics.heightPixels;
 
 		// Getting LocationManager object
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -310,6 +319,7 @@ public class StartActivity extends ActionBarActivity implements
 		@Override
 		protected void onPostExecute(Bitmap b) {
 			spinner.setVisibility(View.INVISIBLE);
+					
 			view.setImageBitmap(b);
 		}
 	}
