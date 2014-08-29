@@ -121,6 +121,22 @@ public class sqlDatabaseHelper implements Parcelable
 		SQLiteDatabase db = helper.getWritableDatabase();
 		Cursor mCursor = db.rawQuery("SELECT * FROM " + sqlHelper.TABLE_NAME, null);
 		Boolean rowExists;
+		if (mCursor.moveToFirst())
+		{
+		  rowExists = false;
+		} 
+		else
+		{
+		   rowExists = true;
+		}
+		return rowExists;
+	}
+	
+	public boolean isDistEmpty()
+	{
+		SQLiteDatabase db = helper.getWritableDatabase();
+		Cursor mCursor = db.rawQuery("SELECT * FROM " + sqlHelper.TABLE_RADIUS, null);
+		Boolean rowExists;
 
 		if (mCursor.moveToFirst())
 		{
@@ -133,11 +149,44 @@ public class sqlDatabaseHelper implements Parcelable
 		return rowExists;
 	}
 	
+	public void insertDist(int id, float distance)
+	{
+		SQLiteDatabase db = helper.getWritableDatabase();
+		//getting up the value for insertion
+		ContentValues value = new ContentValues();
+		value.put(sqlHelper.UID, id);
+		value.put(sqlHelper.RADIUS, distance);
+		//insert value to table
+		db.insert(sqlHelper.TABLE_RADIUS, null, value);
+		db.close();
+	}
+	public void deleteDist(int id)
+	{
+		SQLiteDatabase db = helper.getWritableDatabase();
+		//look in table for matching ID to delete
+		db.delete(sqlHelper.TABLE_RADIUS,sqlHelper.UID + " = ?", new String[] {String.valueOf(id)});
+		db.close();
+	}
+	public float getDist(int id)
+	{
+		SQLiteDatabase db = helper.getWritableDatabase();
+		String[] columns = {sqlHelper.UID, sqlHelper.RADIUS};
+		//get the table with id value
+		Cursor cursor = db.query(sqlHelper.TABLE_RADIUS, columns, sqlHelper.UID + " = ?", new String[] { String.valueOf(id) }, null, null, null);
+		//go to first cursor with info
+		if(cursor != null)
+			cursor.moveToFirst();
+		//construct Data object and return 
+		float distance = cursor.getInt(1);
+		return distance;
+	}
+	
 	
 	static class sqlHelper extends SQLiteOpenHelper
 	{
 		private static final String DATABASE_NAME = "TakeMeOutData";
 		private static final String TABLE_NAME = "PlaceTable";
+		private static final String TABLE_RADIUS = "RadiusTable";
 		private static final String UID = "_id";
 		private static final String TIME = "Time";
 		private static final String STORE_NAME = "Name";
@@ -148,9 +197,10 @@ public class sqlDatabaseHelper implements Parcelable
 		private static final String PRICE = "Price";
 		private static final String PIC_REF = "Pic";
 		private static final String STORE_ID = "StoreID";
+		private static final String RADIUS = "Radius";
 		
 		//	private static sqlHelper sInstance;
-		private static final int DATABASE_VERSION = 7;
+		private static final int DATABASE_VERSION = 10;
 
 		private String Json = "";
 
@@ -167,6 +217,12 @@ public class sqlDatabaseHelper implements Parcelable
 				//+ PRICE + " text, " 		//7
 				//+ PIC_REF + " text" // 8
 				+ ");";
+		
+		private static final String DATABASE_RADIUS = "CREATE TABLE "
+				+ TABLE_RADIUS + "("
+				+ UID + " integer primary key, "
+				+ RADIUS + " real"
+				+ ");";
 
 		public sqlHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -177,12 +233,14 @@ public class sqlDatabaseHelper implements Parcelable
 		public void onCreate(SQLiteDatabase db) {
 			Log.i("OnCREATE", DATABASE_CREATE);
 			db.execSQL(DATABASE_CREATE);
+			db.execSQL(DATABASE_RADIUS);
 			Log.i("OnCREATE", "");
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + "");
+			db.execSQL("DROP TABLE IF EXISTS " + TABLE_RADIUS + "");
 			onCreate(db);
 		}
 

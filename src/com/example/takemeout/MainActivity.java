@@ -25,6 +25,13 @@ public class MainActivity extends ActionBarActivity {
         MyApplication app  = (MyApplication)getApplication();
         app.sqlhelper = sqlHelper;
         
+        if (sqlHelper.isDistEmpty()) {
+			Log.i("OnCREATEMain","distance is empty");
+			sqlHelper.insertDist(1, 4828);
+		} 
+        
+        
+        
         Button butStart = (Button)findViewById(R.id.butStart);
         Button butSetting = (Button) findViewById(R.id.butSetting);
         butStart.setOnClickListener(new OnClickListener() {

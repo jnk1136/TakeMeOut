@@ -84,4 +84,13 @@
         android:layout_centerVertical="true"
         android:visibility="invisible" />
 
+    <TextView
+        android:id="@+id/textDist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/butYes"
+        android:layout_alignLeft="@+id/butYes"
+        android:text="Distance searched: "
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
 </RelativeLayout>

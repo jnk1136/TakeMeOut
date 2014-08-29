@@ -1,6 +1,7 @@
 package com.example.takemeout;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,6 +48,7 @@ public class StartActivity extends ActionBarActivity implements
 	Button buttonNo;
 	Button buttonYes;
 	Button buttonInfo;
+	TextView textDist;
 	ImageView view;
 
 	LocationManager locationManager;
@@ -59,22 +61,27 @@ public class StartActivity extends ActionBarActivity implements
 	
 	sqlDatabaseHelper sqlHelper;
 	ProgressBar spinner;
+	
+	float radius;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 		
-
 		sqlHelper = ((MyApplication)getApplication()).sqlhelper;
 
-		Log.i("onActivityResult","got bundle");
+		radius = sqlHelper.getDist(1);
+		Log.i("onCreate", "Distance to search for: " + Float.toString(radius));
 
 		buttonNo = (Button) findViewById(R.id.butNo);
 		buttonYes = (Button) findViewById(R.id.butYes);
 		buttonInfo = (Button) findViewById(R.id.butInfo);
 		view = (ImageView) this.findViewById(R.id.imageStore);
 		spinner = (ProgressBar) findViewById(R.id.progressBar);
+		textDist = (TextView) findViewById(R.id.textDist);
+		
+		textDist.setText("Searching Distance: "+Float.toString(round( (float)(radius/1609.34),2)) + " miles" );
 		
 		ViewTreeObserver vto = view.getViewTreeObserver();
 		vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -91,10 +98,6 @@ public class StartActivity extends ActionBarActivity implements
 		buttonNo.setClickable(false);
 		buttonYes.setClickable(false);
 		buttonInfo.setClickable(false);
-
-		//metrics = this.getResources().getDisplayMetrics();
-		//picW = metrics.widthPixels;
-		//picH = metrics.heightPixels;
 
 		// Getting LocationManager object
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -238,6 +241,11 @@ public class StartActivity extends ActionBarActivity implements
 						+ "").setPositiveButton("Okay", infoClickListener)
 				.show();
 	}
+	public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
+    }
 
 	private class GooglePlaceSearch extends AsyncTask<Void, Integer, Void> {
 		
@@ -253,7 +261,8 @@ public class StartActivity extends ActionBarActivity implements
 		protected Void doInBackground(Void... params) {
 			try {
 				Log.i("GooglePlaceSearch", "Getting Results");
-				result = GooglePlaceAPI.getListOfPlaceID(lat, lon);
+				
+				result = GooglePlaceAPI.getListOfPlaceID(lat, lon, radius);
 				Collections.shuffle(result);
 				Log.i("GooglePlaceSearch", "Got Results");
 				spinner.dismiss();

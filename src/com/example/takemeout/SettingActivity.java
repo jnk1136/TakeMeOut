@@ -17,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class SettingActivity extends ActionBarActivity {
 
@@ -25,13 +27,15 @@ public class SettingActivity extends ActionBarActivity {
 	ListView listData;
 	List<Place> listOfPlaces;
 	List<Data> listOfData;
+	EditText editRadius;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 		sqlHelper = ((MyApplication)getApplication()).sqlhelper;	
 		listData = (ListView) findViewById(R.id.listViewData);
-
+		editRadius = (EditText)findViewById(R.id.editRadius);
 		
 		Log.i("onActivityResult","got bundle");
 		if (!sqlHelper.isEmpty())
@@ -56,7 +60,6 @@ public class SettingActivity extends ActionBarActivity {
 		});
 	}
 	
-	
 	protected boolean onLongListItemClick(View v, int pos, long id) throws InterruptedException, ExecutionException {
 	    Log.i("onLongListItemClick", "onLongListItemClick id=" + id + " pos="+pos);
 	    Place p = new GoogleGetDetail().execute(listOfData.get(pos).getPlace().getStoreID()).get();
@@ -66,7 +69,6 @@ public class SettingActivity extends ActionBarActivity {
 	}
 
 	public void callDialog(final int position, Place p) {
-		
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -92,8 +94,8 @@ public class SettingActivity extends ActionBarActivity {
 
 		
 	}
+	
     private class GoogleGetDetail extends AsyncTask<String, Integer, Place> {
-
 		@Override
 		protected Place doInBackground(String... storeId) {
 			Log.i("DoInBackground", "Start doInBackground for detail");
@@ -108,6 +110,47 @@ public class SettingActivity extends ActionBarActivity {
 			return null;
 		}
 	}
+    
+    
+    public void SetDistance(View view)
+    {
+    	
+    
+    	if(editRadius.getText().toString().equals("") || editRadius.getText().toString().equals("."))
+    	{
+    		editRadius.setText("");
+    		Log.i("setDistance", "Blank or decimal");
+    		Toast.makeText(getApplicationContext(), "Can't be blank or just a decimal",
+  				   Toast.LENGTH_LONG).show();
+    	}
+    	
+    	else if(Float.parseFloat(editRadius.getText().toString()) == 0)
+    	{
+    		editRadius.setText("");
+    		Toast.makeText(getApplicationContext(), "Can't be 0",
+ 				   Toast.LENGTH_LONG).show();
+    	}
+    	else if(Float.parseFloat(editRadius.getText().toString()) > 30)
+    	{
+    		editRadius.setText("");
+    		Toast.makeText(getApplicationContext(), "Can't be great than 30",
+    				   Toast.LENGTH_LONG).show();
+    	}
+    	else
+    	{
+    		sqlHelper.deleteDist(1);
+    		Log.i("setDistance", "has correct content");
+    		
+        	float mile = Float.parseFloat(editRadius.getText().toString());
+        	Log.i("setDistance", Float.toString(mile));
+        	float meter = (float) (mile * 1609.34);      	
+        	Log.i("setDistance", Float.toString(meter));
+        	sqlHelper.insertDist(1, meter);
+        	Toast.makeText(getApplicationContext(),"Distance set to "+Float.toString(mile) + " miles",
+ 				   Toast.LENGTH_LONG).show();
+        	editRadius.setText("");
+    	}
+    }
     
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

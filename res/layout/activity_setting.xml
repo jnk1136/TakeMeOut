@@ -8,26 +8,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.takemeout.SettingActivity" >
 
-    <EditText
-        android:id="@+id/textDist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
-
     <Button
         android:id="@+id/butDist"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textDist"
-        android:layout_alignBottom="@+id/textDist"
         android:layout_alignParentRight="true"
-        android:text="Button" />
+        android:text="Set" 
+        android:onClick="SetDistance"/>
 
     <ListView
         android:id="@+id/listViewData"
@@ -36,5 +24,20 @@
         android:layout_alignRight="@+id/butDist"
         android:layout_below="@+id/butDist" >
     </ListView>
+
+    <EditText
+        android:id="@+id/editRadius"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/listViewData"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="22dp"
+        android:layout_toLeftOf="@+id/butDist"
+        android:ems="10"
+        android:hint="Enter miles to search"
+        android:inputType="numberDecimal" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>

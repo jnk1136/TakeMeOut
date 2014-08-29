@@ -29,7 +29,7 @@ import com.google.gson.*;
 public class GooglePlaceAPI {
 
 	final static String API_Key = "AIzaSyC3iATl0yMKagIqd3s_hOymF5YrRdOvXoA";
-	private static String Radius = "4828";//about 3 miles
+	//private static String Radius = "4828";//about 3 miles
 	final static String Type = "food";
 	final static String Keyword = "food";
 
@@ -59,16 +59,17 @@ public class GooglePlaceAPI {
 			"&key=%s";
 	
 	
-	public static String getRadius() {
+	/*public static String getRadius() {
 		return Radius;
 	}
 
 	public static void setRadius(String radius) {
 		Radius = radius;
-	}
+	}*/
 	
-	public static List<String> getListOfPlaceID(String lat, String lon) throws ParseException, IOException, JSONException
+	public static List<String> getListOfPlaceID(String lat, String lon, float Radius) throws ParseException, IOException, JSONException
 	{
+		Log.i("getListOfPlaceId", "Distance to search for: " + Float.toString(Radius));
 		String radarSearchURL = String.format(SearchURL, 
 				lat, 
 				lon,
