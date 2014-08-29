@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 public class SettingActivity extends ActionBarActivity {
 
+	//global variables
 	sqlDatabaseHelper sqlHelper;
 	ListView listData;
 	List<Place> listOfPlaces;
@@ -33,13 +34,17 @@ public class SettingActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
+		
+		//set id for layouts
 		sqlHelper = ((MyApplication)getApplication()).sqlhelper;	
 		listData = (ListView) findViewById(R.id.listViewData);
 		editRadius = (EditText)findViewById(R.id.editRadius);
 		
 		Log.i("onActivityResult","got bundle");
+		//if sql is not empty
 		if (!sqlHelper.isEmpty())
 		{
+			//populate listView
 			listOfData = sqlHelper.getAllData();
 			if (listOfData != null) 
 			{
@@ -48,6 +53,7 @@ public class SettingActivity extends ActionBarActivity {
 			}
 		}
 		
+		//longclick for listview and call dialogbox
 		listData.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> aV, View view,int pos, long id) {
@@ -60,14 +66,17 @@ public class SettingActivity extends ActionBarActivity {
 		});
 	}
 	
+	//onlongclick to get detail of store
 	protected boolean onLongListItemClick(View v, int pos, long id) throws InterruptedException, ExecutionException {
 	    Log.i("onLongListItemClick", "onLongListItemClick id=" + id + " pos="+pos);
+	    //make API call with storeID
 	    Place p = new GoogleGetDetail().execute(listOfData.get(pos).getPlace().getStoreID()).get();
 	   callDialog(pos, p);
 	    
 	    return true;
 	}
 
+	//dialog box for store detail info
 	public void callDialog(final int position, Place p) {
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			@Override
@@ -84,6 +93,8 @@ public class SettingActivity extends ActionBarActivity {
 				}
 			}
 		};
+		
+		//call dialogbox
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(
 				p.getName() + "\nAddress: " + p.getAddress() + "\nPhone: "
@@ -91,10 +102,9 @@ public class SettingActivity extends ActionBarActivity {
 						+ p.getTotalRating() + ")" + "\nPrice: " + p.getPrice())
 				.setNegativeButton("Delete", dialogClickListener)
 				.setNeutralButton("Okay", dialogClickListener).show();
-
-		
 	}
 	
+	//used to get details of store
     private class GoogleGetDetail extends AsyncTask<String, Integer, Place> {
 		@Override
 		protected Place doInBackground(String... storeId) {
@@ -102,6 +112,7 @@ public class SettingActivity extends ActionBarActivity {
 			try {
 				Log.i("DoInBackground", storeId[0]);
 				Log.i("GoogleGetDetail", "Getting Place Info");
+				//make google api call
 				Place p = GooglePlaceAPI.getPlaceDetail(storeId[0]);
 				return p;
 			}
@@ -111,11 +122,10 @@ public class SettingActivity extends ActionBarActivity {
 		}
 	}
     
-    
+    //when set button was clicked
     public void SetDistance(View view)
     {
-    	
-    
+    	//see if the value is valid
     	if(editRadius.getText().toString().equals("") || editRadius.getText().toString().equals("."))
     	{
     		editRadius.setText("");
@@ -123,29 +133,36 @@ public class SettingActivity extends ActionBarActivity {
     		Toast.makeText(getApplicationContext(), "Can't be blank or just a decimal",
   				   Toast.LENGTH_LONG).show();
     	}
-    	
+    	//see if it is zero
     	else if(Float.parseFloat(editRadius.getText().toString()) == 0)
     	{
     		editRadius.setText("");
     		Toast.makeText(getApplicationContext(), "Can't be 0",
  				   Toast.LENGTH_LONG).show();
     	}
+    	//see if it is passed searching distance
     	else if(Float.parseFloat(editRadius.getText().toString()) > 30)
     	{
     		editRadius.setText("");
     		Toast.makeText(getApplicationContext(), "Can't be great than 30",
     				   Toast.LENGTH_LONG).show();
     	}
+    	//if distance is valid
     	else
     	{
+    		//delete first index
     		sqlHelper.deleteDist(1);
     		Log.i("setDistance", "has correct content");
     		
+    		//convert mile to meter to place in DB
         	float mile = Float.parseFloat(editRadius.getText().toString());
         	Log.i("setDistance", Float.toString(mile));
         	float meter = (float) (mile * 1609.34);      	
         	Log.i("setDistance", Float.toString(meter));
+        	
+        	//insert first index
         	sqlHelper.insertDist(1, meter);
+        	
         	Toast.makeText(getApplicationContext(),"Distance set to "+Float.toString(mile) + " miles",
  				   Toast.LENGTH_LONG).show();
         	editRadius.setText("");

@@ -28,6 +28,7 @@ import com.google.gson.*;
 
 public class GooglePlaceAPI {
 
+	//const used in the code
 	final static String API_Key = "AIzaSyC3iATl0yMKagIqd3s_hOymF5YrRdOvXoA";
 	//private static String Radius = "4828";//about 3 miles
 	final static String Type = "food";
@@ -58,15 +59,7 @@ public class GooglePlaceAPI {
 			"&photoreference=%s" +
 			"&key=%s";
 	
-	
-	/*public static String getRadius() {
-		return Radius;
-	}
-
-	public static void setRadius(String radius) {
-		Radius = radius;
-	}*/
-	
+	//return list of business IDs
 	public static List<String> getListOfPlaceID(String lat, String lon, float Radius) throws ParseException, IOException, JSONException
 	{
 		Log.i("getListOfPlaceId", "Distance to search for: " + Float.toString(Radius));
@@ -83,19 +76,21 @@ public class GooglePlaceAPI {
 		
 		List<String> listOfID= new ArrayList<String>();
 		
+		//parsing json
 		JSONObject root = new JSONObject(jsonResult);
 		JSONArray results = root.getJSONArray("results");
 		
+		//adding ids to list
 		for(int i = 0; i< results.length(); i++)
 		{
 			String placeID = results.getJSONObject(i).getString("place_id");//.getAsJsonObject().get("place_id").getAsString();
 			listOfID.add(placeID);
-			//Log.i("Generating ListOfID",placeID);
 		}
 		Log.i("getListOfPlaceID","Finished!");
 		return listOfID;
 	}
 
+	//returns the place with the id
 	public static Place getPlaceDetail(String placeid) throws IOException, JSONException
 	{	
 		String placeDetailURL = String.format(PlaceDetailURL, 
@@ -109,6 +104,7 @@ public class GooglePlaceAPI {
 		
 		String rating, totalRating, priceLevel, address, picRef, phone, name;
 		
+		//parsing Json and set correct values to return
 		JSONObject root = new JSONObject(jsonResult);
 		JSONObject results = root.getJSONObject("result");
 		Log.i("getPlaceDetail","parsing data");
@@ -135,11 +131,13 @@ public class GooglePlaceAPI {
 		
 		Log.i("PlaceAPI picURL", picRef);
 		
+		//return place
 		Place p = new Place(name, address, phone, rating, totalRating, priceLevel, picRef, placeid);
 		
 		return p;
 	}
 	
+	//getJson from connection
 	public static String getJson(String URL) throws IOException
 	{
 		HttpGet request = new HttpGet(URL);
@@ -150,11 +148,9 @@ public class GooglePlaceAPI {
 		return jsonResult;
 	}
 	
-	
+	//get Pics for bitmap 
 	public static Bitmap getPic(String picRef, int W, int H) throws IOException
 	{
-		//W = W;
-		//H = H;
 		String placePhoto = String.format(PlacePhotoURL, 
 				W,
 				H,
@@ -162,12 +158,13 @@ public class GooglePlaceAPI {
 				API_Key
 				);
 		URL placePhotoURL = new URL(placePhoto);
+		//make connection
 		HttpURLConnection connection = (HttpURLConnection) placePhotoURL.openConnection();
 		connection.connect();
 		InputStream iStream = connection.getInputStream();
 		
 		Bitmap bitmap = BitmapFactory.decodeStream(iStream);
-		
+		//send bitmap back
 		return bitmap;
 	}
 	

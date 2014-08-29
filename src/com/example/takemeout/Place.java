@@ -1,5 +1,6 @@
 package com.example.takemeout;
 
+//Place class to store info
 public class Place {
 	private String rating = "", 
 			priceLevel = "", 
@@ -9,8 +10,8 @@ public class Place {
 			phoneNum = "", 
 			name = "", 
 			storeID = "";
-	//private String lat, lon;
-	
+
+	//basic setting and getters
 	public void setRating(String rating)
 	{	this.rating = rating;	}
 	
@@ -27,14 +28,16 @@ public class Place {
 
 	public void setPrice(String price)
 	{	
-		this.priceLevel = price;	
+		this.priceLevel = price;
+		//set corresponding number to price 
 		setPriceWord(priceLevel);
 	}
-	
+	//blank constructor
 	public Place(){
 		
 	}
 	
+	//constructor
 	public Place(String name, String address, String phoneNum, String rating, String totalRating, String priceLevel, String picRef, String storeId) 
 	{
 		super();
@@ -61,6 +64,7 @@ public class Place {
 	public void setName(String name)
 	{	this.name = name;	}
 	
+	//another constructor
 	public void setAll( String name, String address, String phoneNum, String rating, String totalRating, String priceLevel, String picRef)
 	{
 		this.rating = rating;
@@ -95,6 +99,7 @@ public class Place {
 	public String getName()
 	{	return name;	}
 	
+	//set number to price point
 	public void setPriceWord(String price)
 	{
 		if(price.equals("0"))

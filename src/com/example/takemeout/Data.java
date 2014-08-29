@@ -1,5 +1,6 @@
 package com.example.takemeout;
 
+//class to hold Data, I dont think it is used
 public class Data {
 	private String time;
 	private Place place;

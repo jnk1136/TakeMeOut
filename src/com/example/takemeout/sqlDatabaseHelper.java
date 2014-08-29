@@ -29,7 +29,7 @@ public class sqlDatabaseHelper implements Parcelable
 		return helper;
 	}
 	
-
+	//get all data, not used
 	public List<Data> getAllData()
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -44,12 +44,6 @@ public class sqlDatabaseHelper implements Parcelable
 			String time = cursor.getString(1);
 			String name = cursor.getString(2);
 			String storeId = cursor.getString(3);
-			//int rating = cursor.getInt(3);
-			//int totalRating = cursor.getInt(4);
-			//String phone = cursor.getString(5);
-			//String address = cursor.getString(6);
-			//String price = cursor.getString(7);
-			//String picRef = cursor.getString(8);
 			Place p= new Place();
 			p.setName(name);
 			p.setStoreID(storeId);
@@ -61,7 +55,7 @@ public class sqlDatabaseHelper implements Parcelable
 		return listOfData;
 	}
 	
-	
+	//get place info
 	public Data getPlace(int id)
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -72,12 +66,6 @@ public class sqlDatabaseHelper implements Parcelable
 		String time = cursor.getString(1);
 		String name = cursor.getString(2);
 		String storeId = cursor.getString(3);
-		//String rating = cursor.getString(3);
-		//String totalRating = cursor.getString(4);
-		//String phone = cursor.getString(5);
-		//String address = cursor.getString(6);
-		//String price = cursor.getString(7);
-		//String picRef = cursor.getString(8);
 		
 		Place p = null;
 		p.setName(name);
@@ -87,6 +75,7 @@ public class sqlDatabaseHelper implements Parcelable
 		return data;
 	}
 	
+	//delete the value from table
 	public void deleteData(int id){
 		SQLiteDatabase db = helper.getWritableDatabase();
 		db.delete(sqlHelper.TABLE_NAME,sqlHelper.UID + " = ?", new String[] {String.valueOf(id)});
@@ -95,6 +84,7 @@ public class sqlDatabaseHelper implements Parcelable
 		db.close();
 	}
 	
+	//insert data to table
 	public void insertData(String time, Place p )
 	{
 		Log.i("insertData", sqlHelper.DATABASE_CREATE);
@@ -106,16 +96,11 @@ public class sqlDatabaseHelper implements Parcelable
 		value.put(sqlHelper.TIME, time);
 		value.put(sqlHelper.STORE_NAME, p.getName());
 		value.put(sqlHelper.STORE_ID, p.getStoreID());
-		//value.put(sqlHelper.RATING, p.getRating());
-		//value.put(sqlHelper.TOTAL_RATING, p.getTotalRating());
-		///value.put(sqlHelper.PHONE_NUM, p.getPhone());
-		//value.put(sqlHelper.ADDRESS, p.getAddress());
-		//value.put(sqlHelper.PRICE, p.getPrice());
-		//value.put(sqlHelper.PIC_REF, p.getPicRef());
 		db.insert(sqlHelper.TABLE_NAME, null, value);
 		db.close();
 	}
 	
+	//check if table is empty
 	public boolean isEmpty()
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -132,6 +117,7 @@ public class sqlDatabaseHelper implements Parcelable
 		return rowExists;
 	}
 	
+	//check if dist is empty
 	public boolean isDistEmpty()
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -149,6 +135,7 @@ public class sqlDatabaseHelper implements Parcelable
 		return rowExists;
 	}
 	
+	//add distance to table
 	public void insertDist(int id, float distance)
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -160,6 +147,7 @@ public class sqlDatabaseHelper implements Parcelable
 		db.insert(sqlHelper.TABLE_RADIUS, null, value);
 		db.close();
 	}
+	//delete distance from table
 	public void deleteDist(int id)
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -167,6 +155,7 @@ public class sqlDatabaseHelper implements Parcelable
 		db.delete(sqlHelper.TABLE_RADIUS,sqlHelper.UID + " = ?", new String[] {String.valueOf(id)});
 		db.close();
 	}
+	//get the distance from table
 	public float getDist(int id)
 	{
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -181,9 +170,10 @@ public class sqlDatabaseHelper implements Parcelable
 		return distance;
 	}
 	
-	
+	//sqlhelper 
 	static class sqlHelper extends SQLiteOpenHelper
 	{
+		//const names
 		private static final String DATABASE_NAME = "TakeMeOutData";
 		private static final String TABLE_NAME = "PlaceTable";
 		private static final String TABLE_RADIUS = "RadiusTable";
@@ -204,18 +194,13 @@ public class sqlDatabaseHelper implements Parcelable
 
 		private String Json = "";
 
+		//command to create tables
 		private static final String DATABASE_CREATE = "CREATE TABLE "
 				+ TABLE_NAME + "("				//COLUMN NUMBER
 				+ UID + " integer primary key autoincrement, "	//0
 				+ TIME + " text, " 		//1
 				+ STORE_NAME + " text, "		//2 
-				+ STORE_ID + " text"
-				//+ RATING + " text, " 		//3
-				//+ TOTAL_RATING + " text, "	//4  
-				//+ PHONE_NUM + " text, " 	//5
-				//+ ADDRESS + " text, " 		//6
-				//+ PRICE + " text, " 		//7
-				//+ PIC_REF + " text" // 8
+				+ STORE_ID + " text" //3
 				+ ");";
 		
 		private static final String DATABASE_RADIUS = "CREATE TABLE "
